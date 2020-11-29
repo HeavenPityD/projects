@@ -124,7 +124,7 @@ vector<Edge> Graph::getEdges() const
         return vector<Edge>();
 
     vector<Edge> ret;
-    set<pair<Vertex, Vertex>> seen;
+    set<pair<Vertex, Vertex> > seen;
 
     for (auto it = adjacency_list.begin(); it != adjacency_list.end(); it++)
     {
