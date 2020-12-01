@@ -34,9 +34,9 @@ int main() {
         split(line, ',', v);
         v[1] = v[1].substr(1, v[1].length()-2);
         v[2] = v[2].substr(1, v[2].length() - 2);
-        
+        v[4] = v[4].substr(1, v[4].length() - 2);
         try{
-            airports.push_back(Airport(v[1], v[2], std::stod(v[6]), std::stod(v[7])));
+            airports.push_back(Airport(v[1], v[2], std::stod(v[6]), std::stod(v[7]), v[4]));
         } catch (std::invalid_argument) {
             continue;
         }
