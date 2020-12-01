@@ -1,12 +1,12 @@
-EXE = openFlights
+# Executable names:
+EXE = main
+TEST = test
 
-
+# Add all object files needed for compiling:
 EXE_OBJ = main.o
-OBJS = graph.o main.o airport.o 
+OBJS = graph.o main.o Airport.o Coordinate.o
 
+# Generated files
 
-graph.o : graph.cpp graph.h
-random.o : random.cpp random.h
-main.o : main.cpp
-airport.o : airport.cpp airport.h
-
+# Use the cs225 makefile template:
+include cs225/make/cs225.mk
