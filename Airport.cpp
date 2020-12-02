@@ -1,4 +1,5 @@
 #include "Airport.h"
+
 Airport::Airport() {
 
 }
@@ -12,4 +13,11 @@ Airport::Airport(std::string n, std::string c, double lat, double lon, std::stri
 
 double Airport::distance(const Airport & other) {
     return cord.dis(other.cord);
+}
+
+bool Airport::operator== (Airport a) {
+    if (name == a.name && ID == a.ID) {
+        return true;
+    } 
+    return false;
 }

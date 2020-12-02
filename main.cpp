@@ -2,11 +2,20 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include "route.h"
 #include "Airport.h"
+#include "graph.h"
 
 using namespace std;
 
+Airport findAirport(vector<Airport> airports, string ID) {
+    for (int i = 0; i < (int)airports.size(); i++) {
+        if (airports[i].ID == ID) {
+            return airports[i];
+        }
+    }
+    return Airport();
+}
 void split(const string & s, char c, vector<string> & v) {
     int i = 0;
     int j=s.find(c);
@@ -24,6 +33,7 @@ int main() {
     file.open("airports.dat");
     string line;
     vector<Airport> airports;
+    vector<route> routes;
 
     while (std::getline(file, line)) {
         vector<string> v;
@@ -42,7 +52,42 @@ int main() {
         }
     }
     file.close();
-    int i = 0;
-    std::cout << airports.size() << std::endl;
+    
+    file.open("routes.dat");
+    while (std::getline(file, line)) {
+        vector<string> v;
+        if (line == "") {
+            break;
+        }
+          //std::cout << line << std::endl;
+        split(line, ',', v);
+        Airport source = findAirport(airports, v[2]);
+        Airport dest = findAirport(airports, v[4]);
+        if (source == Airport() || dest == Airport()) {
+            continue;
+            std::cout << "Airport not found" << std::endl;
+        }
+
+        double dis = source.distance(dest);
+        routes.push_back(route(source, dest, dis));
+    }
+    file.close();
+
+    Graph g(true, true);
+    for (size_t i = 0; i < airports.size(); i++) {
+        g.insertVertex(airports[i].ID);
+    }
+
+    for (size_t i = 0; i < routes.size(); i++) {
+        if (g.vertexExists(routes[i].source.ID) && g.vertexExists(routes[i].dest.ID)) {
+            std::cout << "Edge created." << std::endl;
+            g.insertEdge(routes[i].source.ID, routes[i].dest.ID);
+            g.setEdgeWeight(routes[i].source.ID, routes[i].dest.ID, routes[i].weight);
+        } else {
+            std::cout << "Vertex not found" << std::endl;
+        }
+        
+    }
+
     return 0;
 }

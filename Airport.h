@@ -1,4 +1,5 @@
 #include "Coordinate.h"
+#pragma once
 class Airport {
     public:
         std::string name;
@@ -12,5 +13,5 @@ class Airport {
         //returns the distance between two airports, in km.
         double distance(const Airport & other);
         
-
+        bool operator== (Airport a);
 };
