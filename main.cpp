@@ -5,6 +5,7 @@
 #include "route.h"
 #include "Airport.h"
 #include "graph.h"
+#include "dijkstra.cpp"
 
 using namespace std;
 
@@ -87,8 +88,30 @@ int main() {
         }
         
     }
+    
 
-    //For Dijkstra testing
+    Vertex source_ = "HAD";
+    Vertex destination_ = "GKA";
+    map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
+    vector<Vertex> d_path = d_path_n_distance.begin()->first;
+    int d_distance = d_path_n_distance.begin()->second;
+    if (d_distance == -1) {
+        cout << "No fligh available from " << source_ << " to" << destination_ << endl;
+    } else {
+        cout << "Shortest flight route from " << source_ << " to" << destination_ << "is: ";
+        for (size_t i = 0; i < d_path.size(); i++) {
+            cout << d_path[i] << " ";
+        }
+        cout << endl;
+        cout << "The shortest distance is " << d_distance << endl;
+    }
+
+    
+    
+
+
+    /*
+     For Dijkstra testing
     Graph testing_graph(true, true);
     for (int i = 0; i <= 14; i++) {
         testing_graph.insertVertex(std::to_string(i));
@@ -98,7 +121,7 @@ int main() {
     testing_graph.insertEdge("2", "1");
     testing_graph.setEdgeWeight("2", "1", 6);
     testing_graph.insertEdge("1", "14");
-    testing_graph.setEdgeWeight("14", "1", 19);
+    testing_graph.setEdgeWeight("1", "14", 19);
     testing_graph.insertEdge("3", "2");
     testing_graph.setEdgeWeight("3", "2", 7);
     testing_graph.insertEdge("3", "11");
@@ -143,5 +166,15 @@ int main() {
     testing_graph.setEdgeWeight("7", "12", 7);
     testing_graph.insertEdge("12", "7");
     testing_graph.setEdgeWeight("12", "7", 7);
+    
+    
+    map<vector<Vertex>, int> testing_result = Dijkstra(testing_graph, "1", "7");
+    vector<Vertex> p = testing_result.begin()->first;
+    int d = testing_result.begin()->second;
+    cout << "Shortest path is ";
+    for (size_t i = 0; i < p.size(); i++) {
+        cout << p[i] << " ";
+    }
+     */
     return 0;
 }
