@@ -21,6 +21,7 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
     map<Vertex, vector<Vertex>> track; //a map containing the shortest the path from source to all vertices
     
     vector<Vertex> ap_id = g.getVertices(); //all vertices in the graph
+    //for (size_t i = 0; i < ap_id.size(); i++)
     
     /*
      * initiate path and track
@@ -36,16 +37,15 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
      * index of source is 0
      * index of destination is size - 1
      */
-    index[source] = 0;
-    index[destination] = int(ap_id.size() - 1);
-    int i = 1;
+    //index[source] = 0;
+    //index[destination] = int(ap_id.size() - 1);
+    
     for (size_t i = 0; i < ap_id.size(); i++) {
-        if (ap_id[i] != source && ap_id[i] != destination) {
-            index[ap_id[i]] = i;
-            i++;
-        }
-        
+        index[ap_id[i]] = i;
     }
+    //for (auto it = index.begin(); it != index.end(); ++it) {
+      //  cout << it->first << ": " << it->second << endl;
+    //}
     
     /*
      * build L_m and L_h
@@ -106,6 +106,7 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
         int Lu = tmp.distance_;
         if (u == destination) {
             dis_s_d = Lu;
+            track[destination].push_back(destination);
             break;
         }
         arrived[u] = 0;
