@@ -10,8 +10,14 @@
 
 using namespace std;
 
+/*
+ * Dijkstra function
+ * This function will take a graph and two vertices as inputs
+ * and return a map with the shortes flight route as the key and the shortest distance as value
+ * If no route exists, the shortest distance will be -1
+ */
 map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
-    int dis_s_d = -1;
+    int dis_s_d = -1; // initial shortest distance from source to d
     map<vector<Vertex>, int> path; //a map with one key, the shortest path as a vector, and one value, the shortest distance
     map<Vertex, int> index; //a map with index as keys and all the vertices as values
     map<Vertex, int> L_m; //a map with all the vertices as keys and current shortest distance from source
@@ -19,9 +25,23 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
     vector<vector<int>> w; //a matrix storing the distance for i to j
     map<Vertex, int> arrived; //a map that stores if a vertex has been found
     map<Vertex, vector<Vertex>> track; //a map containing the shortest the path from source to all vertices
-    
     vector<Vertex> ap_id = g.getVertices(); //all vertices in the graph
-    //for (size_t i = 0; i < ap_id.size(); i++)
+    
+    /*
+     * Check if input is valid
+     */
+    int sum = 0;
+    for (size_t i = 0; i < ap_id.size(); i++) {
+        if (ap_id[i] == source || ap_id[i] == destination) {
+            sum++;
+        }
+    }
+    if (sum < 2) {
+        cout << "Invalid Source or Destination" << endl;
+        return path;
+    } else {
+        cout << "Valid Input" << endl;
+    }
     
     /*
      * initiate path and track
@@ -37,15 +57,9 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
      * index of source is 0
      * index of destination is size - 1
      */
-    //index[source] = 0;
-    //index[destination] = int(ap_id.size() - 1);
-    
     for (size_t i = 0; i < ap_id.size(); i++) {
         index[ap_id[i]] = i;
     }
-    //for (auto it = index.begin(); it != index.end(); ++it) {
-      //  cout << it->first << ": " << it->second << endl;
-    //}
     
     /*
      * build L_m and L_h
@@ -58,7 +72,6 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
             L_m[ap_id[i]] = -1;
         }
     }
-    
     L_h.push(L(source, 0));
     
     /*
@@ -76,7 +89,6 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
        vector<Vertex> tmp_vv = g.getAdjacent(tmp_v);
        for (size_t j = 0; j < tmp_vv.size(); j++) {
             int to_ = index[tmp_vv[j]];
-            
             int wft = g.getEdgeWeight(tmp_v, tmp_vv[j]);
             w[from_][to_] = wft;
         }
@@ -92,6 +104,7 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
         arrived[ap_id[i]] = -1;
     }
     
+    
     /*
      * Dijkstra Procedure
      */
@@ -101,44 +114,61 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
             path[path_] = -1;
             break;
         }
-        L tmp = L_h.pop();
-        Vertex u = tmp.vertex_;
-        int Lu = tmp.distance_;
+        
+        L tmp;
+        Vertex u;
+        int Lu;
+        while (!L_h.empty()) {
+            // return the vertex with the shortest distance
+            tmp = L_h.pop();
+            u = tmp.vertex_;
+            Lu = tmp.distance_;
+            // if not yet arrived
+            if (arrived[u] != 0) {
+                break;
+            }
+        }
+        if (arrived[u] == 0) {
+            //the case in which the destination is not connected to the source
+            path[path_] = -1;
+            break;
+        }
         if (u == destination) {
+            // destination arrived
             dis_s_d = Lu;
             track[destination].push_back(destination);
             break;
         }
-        arrived[u] = 0;
-        for (auto it = arrived.begin(); it != arrived.end(); ++ it) {
+        arrived[u] = 0; // mark u has arrived
+        
+        // check all the vertices not yet arrived
+        for (auto it = arrived.begin(); it != arrived.end(); ++it) {
             if (it->second == 0) {
                 continue;
             }
             Vertex v = it->first;
-            int Lv = L_m[it->first];
+            int Lv = L_m[v];
             int wuv = w[index[u]][index[v]];
             if (Lv == -1) {
+                // the case v has never been reached
                 if (wuv != -1) {
+                    // the case v is adjacent to u
                     Lv = Lu + wuv;
+                    L_m[v] = Lv;
                     //push to heap and update track
                     L_h.push(L(v,Lv));
                     track[v] = track[u];
                     track[v].push_back(u);
                 }
             } else {
+                // the case v has been reached
                 if (wuv != -1) {
+                    // the case v is adjacent to u
                     if (Lu + wuv < Lv) {
                         Lv = Lu + wuv;
+                        L_m[v] = Lv;
                         //update heap and update track
-                        size_t up = 0;
-                        for (size_t i = 1; i < L_h.s(); i++) {
-                            if (v == L_h._elems[i].vertex_) {
-                                up = i;
-                            }
-                        }
-                        L upL = L_h._elems[up];
-                        upL.update(Lv);
-                        L_h.updateElem(up, upL);
+                        L_h.push(L(v,Lv));
                         track[v] = track[u];
                         track[v].push_back(u);
                     }
@@ -149,6 +179,7 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
     if (path.size() == 0) {
         path[track[destination]] = dis_s_d;
     }
+    
     return path;
     
     
