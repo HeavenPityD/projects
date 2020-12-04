@@ -81,8 +81,8 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_ = "JFK";
-    Vertex destination_ = "SFO";
+    Vertex source_ = "GKA";
+    Vertex destination_ = "HAD";
     
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     
@@ -99,8 +99,19 @@ int main() {
         cout << "The corresponding shortest distance is " << d_distance << endl;
     }
     
-    
-    cout << "The direct distance between " << source_ << " and " << destination_ << " is " << g.getEdgeWeight(source_, destination_) << endl;
+    vector<Vertex> source_a = g.getAdjacent(source_);
+    bool direct_flight = false;
+    for (size_t i = 0; i < source_a.size(); i++) {
+        if (source_a[i] == destination_) {
+            direct_flight = true;
+        }
+    }
+    if (direct_flight) {
+        cout << "The direct distance between " << source_ << " and " << destination_ << " is " << g.getEdgeWeight(source_, destination_) << endl;
+    } else {
+        cout << "No direct flight from " << source_ << " to " << destination_ << endl;
+    }
+
     /*
     cout << "debugging" << endl;
     vector<Vertex> FNJ_A = g.getAdjacent("FNJ");
