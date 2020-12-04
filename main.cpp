@@ -55,44 +55,27 @@ int main() {
     }
     file.close();
     
-    file.open("routes.dat");
-    while (std::getline(file, line)) {
-        vector<string> v;
-        if (line == "") {
-            break;
-        }
-          //std::cout << line << std::endl;
-        split(line, ',', v);
-        Airport source = findAirport(airports, v[2]);
-        Airport dest = findAirport(airports, v[4]);
-        if (source == Airport() || dest == Airport()) {
-            continue;
-            std::cout << "Airport not found" << std::endl;
-        }
-
-        double dis = source.distance(dest);
-        routes.push_back(route(source, dest, dis));
-    }
-    file.close();
-
     Graph g(true, true);
     for (size_t i = 0; i < airports.size(); i++) {
         g.insertVertex(airports[i].ID);
     }
 
-    for (size_t i = 0; i < routes.size(); i++) {
-        if (g.vertexExists(routes[i].source.ID) && g.vertexExists(routes[i].dest.ID)) {
-            g.insertEdge(routes[i].source.ID, routes[i].dest.ID);
-            g.setEdgeWeight(routes[i].source.ID, routes[i].dest.ID, routes[i].weight);
-        } else {
-            std::cout << "Vertex not found" << std::endl;
+    ifstream dis_file;
+    dis_file.open("distance.csv");
+    while(std::getline(dis_file, line)) {
+        vector<string> v;
+        if (line == "") {
+            break;
         }
-        
+        split(line, ',', v);
+        g.insertEdge(v[0], v[1]);
+        g.setEdgeWeight(v[0], v[1], std::stod(v[2]));
+        //std::cout <<"V0: " << v[0] << " V1:" << v[1] << " V2:" << v[2] << std::endl;
     }
-    
+    dis_file.close();
 
-    Vertex source_ = "DJO";
-    Vertex destination_ = "SKO";
+    Vertex source_ = "ORD";
+    Vertex destination_ = "PVG";
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
     int d_distance = d_path_n_distance.begin()->second;
@@ -108,7 +91,7 @@ int main() {
     }
 
     
-    
+
 
 
     /*
