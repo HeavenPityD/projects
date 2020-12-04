@@ -47,6 +47,7 @@ int main() {
         v[2] = v[2].substr(1, v[2].length() - 2);
         v[4] = v[4].substr(1, v[4].length() - 2);
         try{
+            if (v[4] == "") continue;
             airports.push_back(Airport(v[1], v[2], std::stod(v[6]), std::stod(v[7]), v[4]));
         } catch (std::invalid_argument) {
             continue;
@@ -90,8 +91,8 @@ int main() {
     }
     
 
-    Vertex source_ = "HAD";
-    Vertex destination_ = "GKA";
+    Vertex source_ = "DJO";
+    Vertex destination_ = "SKO";
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
     int d_distance = d_path_n_distance.begin()->second;
