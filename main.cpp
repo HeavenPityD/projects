@@ -30,6 +30,7 @@ void split(const string & s, char c, vector<string> & v) {
 }
 
 int main() {
+
     ifstream file;
     file.open("airports.dat");
     string line;
@@ -70,32 +71,49 @@ int main() {
         split(line, ',', v);
         g.insertEdge(v[0], v[1]);
         g.setEdgeWeight(v[0], v[1], std::stod(v[2]));
-        //std::cout <<"V0: " << v[0] << " V1:" << v[1] << " V2:" << v[2] << std::endl;
     }
+    
     dis_file.close();
-
-    Vertex source_ = "ORD";
-    Vertex destination_ = "PVG";
+    
+    
+    
+    
+    
+    
+    cout << "start" << endl;
+    Vertex source_ = "JFK";
+    Vertex destination_ = "SFO";
+    
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
+    
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
     int d_distance = d_path_n_distance.begin()->second;
     if (d_distance == -1) {
-        cout << "No fligh available from " << source_ << " to" << destination_ << endl;
+        cout << "No fligh available from " << source_ << " to " << destination_ << endl;
     } else {
-        cout << "Shortest flight route from " << source_ << " to" << destination_ << "is: ";
+        cout << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
         for (size_t i = 0; i < d_path.size(); i++) {
             cout << d_path[i] << " ";
         }
         cout << endl;
-        cout << "The shortest distance is " << d_distance << endl;
+        cout << "The corresponding shortest distance is " << d_distance << endl;
     }
-
     
+    
+    cout << "The direct distance between " << source_ << " and " << destination_ << " is " << g.getEdgeWeight(source_, destination_) << endl;
+    /*
+    cout << "debugging" << endl;
+    vector<Vertex> FNJ_A = g.getAdjacent("FNJ");
+    for (size_t i = 0; i < FNJ_A.size(); i++) {
+        cout << FNJ_A[i] << ": ";
+        cout << g.getEdgeWeight("FNJ", FNJ_A[i]) << endl;
+    }
+     */
 
 
 
     /*
-     For Dijkstra testing
+    //For Dijkstra testing
     Graph testing_graph(true, true);
     for (int i = 0; i <= 14; i++) {
         testing_graph.insertVertex(std::to_string(i));
@@ -151,14 +169,30 @@ int main() {
     testing_graph.insertEdge("12", "7");
     testing_graph.setEdgeWeight("12", "7", 7);
     
+    cout << "start" << endl;
+    Vertex source_ = "1";
+    Vertex destination_ = "14";
     
-    map<vector<Vertex>, int> testing_result = Dijkstra(testing_graph, "1", "7");
-    vector<Vertex> p = testing_result.begin()->first;
-    int d = testing_result.begin()->second;
-    cout << "Shortest path is ";
-    for (size_t i = 0; i < p.size(); i++) {
-        cout << p[i] << " ";
+    map<vector<Vertex>, int> d_path_n_distance = Dijkstra(testing_graph, source_, destination_);
+    
+    vector<Vertex> d_path = d_path_n_distance.begin()->first;
+    int d_distance = d_path_n_distance.begin()->second;
+    if (d_distance == -1) {
+        cout << "No fligh available from " << source_ << " to " << destination_ << endl;
+    } else {
+        cout << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
+        for (size_t i = 0; i < d_path.size(); i++) {
+            cout << d_path[i] << " ";
+        }
+        cout << endl;
+        cout << "The corresponding shortest distance is " << d_distance << endl;
     }
-     */
+    
+    
+    cout << "The direct distance between " << source_ << " and " << destination_ << " is " << testing_graph.getEdgeWeight(source_, destination_) << endl;
+    
+    */
+    
+    
     return 0;
 }
