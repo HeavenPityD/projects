@@ -81,12 +81,17 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_ = "GKA";
-    Vertex destination_ = "HAD";
+    Vertex source_ = "JFK";
+    Vertex destination_ = "ORD";
     
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
+    vector<Airport> air_path; // Air_path stores airports of the path
+    for (size_t i = 0; i < d_path.size(); i++) {
+        air_path.push_back(findAirport(airports, d_path[i]));
+    }
+    
     int d_distance = d_path_n_distance.begin()->second;
     if (d_distance == -1) {
         cout << "No fligh available from " << source_ << " to " << destination_ << endl;
