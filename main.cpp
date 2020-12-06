@@ -30,6 +30,7 @@ void split(const string & s, char c, vector<string> & v) {
         j = s.find(c, j);
     }
 }
+/*
 int transe_latitude(double latitude, cs225::PNG const png)
 {
     // transe latitude to [0,180]
@@ -97,7 +98,81 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
         }
     }
 }
+*/
 
+int transe_latitude(double latitude, cs225::PNG const png)
+{
+    // transe latitude to [0,180]
+    if(latitude< -90 )
+    {
+        latitude = -90;
+    }
+    if(latitude >90)
+    {
+        latitude = 90;
+    }
+    double new_lat = latitude + 90;
+    return new_lat / 180.0 * png.height();
+}
+
+int transe_longitude(double longitude,cs225::PNG const png)
+{
+    // transe longitude to [0,360]
+    if(longitude< -180 )
+    {
+        longitude = -180;
+    }
+    if(longitude >180)
+    {
+        longitude = 180;
+    }
+    double new_lon = longitude + 180;
+    return new_lon / 360.0 * png.width();
+}
+
+void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& png)
+{
+    // get transed address
+    int new_lat1 =transe_latitude(lat1, png);
+    int new_lon1 = transe_longitude(lon1, png);
+    int new_lat2 = transe_latitude(lat2, png);
+    int new_lon2 = transe_longitude(lon2, png);
+    cout <<new_lat1 << endl;
+    cout <<new_lon1 << endl;
+    cout <<new_lat2 << endl;
+    cout <<new_lon2 << endl;
+    
+    int maxLat = new_lat1 > new_lat2 ? new_lat1 : new_lat2;
+    int minLat = new_lat1 < new_lat2 ? new_lat1 : new_lat2;
+    int maxLon = new_lon1 > new_lon2 ? new_lon1 : new_lon2;
+    int minLon = new_lon1 < new_lon2 ? new_lon1 : new_lon2;
+    // calc slop
+    // deal with minLat  == maxLat
+    if(minLat == maxLat)
+    {
+        int x = minLat;
+        for(int y = minLon ; y <= maxLon ; y ++)
+        {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            pixel.h = 315;
+            pixel.s = 1;
+            pixel.l = 0.5;
+        }
+    }
+    else
+    {
+        double k = ((double)(lon1 - lon2)) / (lat1 - lat2);
+        for(int x = minLat ; x <= maxLat ; x ++)
+        {
+            int y = k * (x - minLat) + minLon;
+            cout << x << "\t" << y << endl;
+            cs225::HSLAPixel& pixel = png.getPixel(y, x);
+            pixel.h = 315;
+            pixel.s = 1;
+            pixel.l = 0.5;
+        }
+    }
+}
 
 int main() {
 
@@ -151,8 +226,8 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_ = "GKA";
-    Vertex destination_ = "HAD";
+    Vertex source_ = "JFK";
+    Vertex destination_ = "PVG";
     
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     
