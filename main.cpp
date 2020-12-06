@@ -6,6 +6,8 @@
 #include "Airport.h"
 #include "graph.h"
 #include "dijkstra.cpp"
+#include "cs225/PNG.h"
+#include "cs225/HSLAPixel.h"
 
 using namespace std;
 
@@ -28,6 +30,74 @@ void split(const string & s, char c, vector<string> & v) {
         j = s.find(c, j);
     }
 }
+int transe_latitude(double latitude, cs225::PNG const png)
+{
+    // transe latitude to [0,180]
+    if(latitude< -90 )
+    {
+        latitude = -90;
+    }
+    if(latitude >90)
+    {
+        latitude = 90;
+    }
+    double new_lat = latitude + 90;
+    return new_lat / 180.0 * png.height();
+}
+
+int transe_longitude(double longitude,cs225::PNG const png)
+{
+    // transe longitude to [0,360]
+    if(longitude< -180 )
+    {
+        longitude = -180;
+    }
+    if(longitude >180)
+    {
+        longitude = 180;
+    }
+    double new_lon = longitude + 180;
+    return new_lon / 360.0 * png.width();
+}
+
+void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& png)
+{
+    // get transed address
+    int new_lat1 =transe_latitude(lat1, png);
+    int new_lon1 = transe_longitude(lon1, png);
+    int new_lat2 = transe_latitude(lat2, png);
+    int new_lon2 = transe_longitude(lon2, png);
+    int maxLat = new_lat1 > new_lat2 ? new_lat1 : new_lat2;
+    int minLat = new_lat1 < new_lat2 ? new_lat1 : new_lat2;
+    int maxLon = new_lon1 > new_lon2 ? new_lon1 : new_lon2;
+    int minLon = new_lon1 < new_lon2 ? new_lon1 : new_lon2;
+    // calc slope
+    // deal with minLat  == maxLat
+    if(minLat == maxLat)
+    {
+        int x = minLat;
+        for(int y = minLon ; y <= maxLon ; y ++)
+        {
+            cs225::HSLAPixel& pixel = png.getPixel(y, x);
+            pixel.h = 315;
+            pixel.s = 1;
+            pixel.l = 0.5;
+        }
+    }
+    else
+    {
+        double k = ((double)(minLon - maxLon)) / (minLat - maxLat);
+        for(int x = minLat ; x <= maxLat ; x ++)
+        {
+            int y = k * (x - minLat) + minLat;
+            cs225::HSLAPixel& pixel = png.getPixel(y, x);
+            pixel.h = 315;
+            pixel.s = 1;
+            pixel.l = 0.5;
+        }
+    }
+}
+
 
 int main() {
 
@@ -81,20 +151,35 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_ = "JFK";
-    Vertex destination_ = "ORD";
+    Vertex source_ = "GKA";
+    Vertex destination_ = "HAD";
     
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
-    vector<Airport> air_path; // Air_path stores airports of the path
+    vector<Airport> air_path;
     for (size_t i = 0; i < d_path.size(); i++) {
         air_path.push_back(findAirport(airports, d_path[i]));
     }
+    // draw pic
+    // open picture
+    string image = "blank.png";
+    cs225::PNG png;
+    png.readFromFile(image);
+    for (size_t i = 0; i < air_path.size(); i++) {
+        // get latitude and longitude 
+        double lat1 = air_path[i].latitude;
+        double lon1 = air_path[i].longitude;
+        double lat2 = air_path[i + 1].latitude;
+        double lon2 = air_path[i + 1].longitude;
+        drawLine(lat1,lon1,lat2 ,lon2 ,png);
+    }
     
+    // write result into picture
+    png.writeToFile("result.png");
     int d_distance = d_path_n_distance.begin()->second;
     if (d_distance == -1) {
-        cout << "No fligh available from " << source_ << " to " << destination_ << endl;
+        cout << "No flight available from " << source_ << " to " << destination_ << endl;
     } else {
         cout << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
         for (size_t i = 0; i < d_path.size(); i++) {
@@ -103,6 +188,7 @@ int main() {
         cout << endl;
         cout << "The corresponding shortest distance is " << d_distance << endl;
     }
+    
     
     vector<Vertex> source_a = g.getAdjacent(source_);
     bool direct_flight = false;
