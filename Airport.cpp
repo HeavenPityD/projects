@@ -9,6 +9,8 @@ Airport::Airport(std::string n, std::string c, double lat, double lon, std::stri
     name = n;
     city = c;
     ID = id;
+    latitude = lat;
+    longitude = lon;
 }
 
 double Airport::distance(const Airport & other) {
