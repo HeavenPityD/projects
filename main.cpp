@@ -196,9 +196,16 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_ = "GKA";
-    Vertex destination_ = "HAD";
+    Vertex source_;
+    cout << "Enter your departure airport in IATA format (For example, ORD for Chicago O'hare Airport): " << std::endl;
+    std::cin >> source_;
     
+    Vertex destination_;
+    cout << "Enter your arrival airport in IATA format (For example, JFK for John F. Kennedy Airport): " << std::endl;
+    std::cin >> destination_;
+
+    cout << "Calculating shortest path..." << endl;
+
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
     
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
@@ -231,19 +238,26 @@ int main() {
     }
     
     // write result into picture
-    png.writeToFile("result.png");
+    png.writeToFile("RESULTS/result.png");
+    ofstream result_file;
+    result_file.open("RESULTS/result.txt");
     int d_distance = d_path_n_distance.begin()->second;
     if (d_distance == -1) {
         cout << "No flight available from " << source_ << " to " << destination_ << endl;
+        result_file << "No flight available from " << source_ << " to " << destination_ << endl;
     } else {
         cout << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
+        result_file << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
         for (size_t i = 0; i < d_path.size(); i++) {
             cout << d_path[i] << " ";
+            result_file << d_path[i] << " ";
         }
         cout << endl;
+        result_file << endl;
         cout << "The corresponding shortest distance is " << d_distance << endl;
+        result_file << "The corresponding shortest distance is " << d_distance << endl;
     }
-    
+    result_file.close();
     
     vector<Vertex> source_a = g.getAdjacent(source_);
     bool direct_flight = false;
