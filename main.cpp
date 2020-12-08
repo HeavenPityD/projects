@@ -63,8 +63,43 @@ int transe_longitude(double longitude,cs225::PNG const png)
     return new_lon / 360.0 * png.width();
 }
 
+void sDColor (cs225::HSLAPixel& pixel) {
+    pixel.h = 0;
+    pixel.s = 0.9;
+    pixel.l = 0.6;
+}
+
+void drawSD(double lat, double lon, cs225::PNG& png) {
+    int new_lat1 =transe_latitude(lat, png);
+    int new_lon1 = transe_longitude(lon, png);
+    for (int x = new_lon1; x >= new_lon1 - 4; x--) {
+        for (int y = new_lat1; y >= new_lat1 - 4; y--) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            sDColor(pixel);
+        }
+    }
+    for (int x = new_lon1; x >= new_lon1 - 4; x--) {
+        for (int y = new_lat1; y <= new_lat1 + 4; y++) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            sDColor(pixel);
+        }
+    }
+    for (int x = new_lon1; x <= new_lon1 + 4; x++) {
+        for (int y = new_lat1; y <= new_lat1 + 4; y++) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            sDColor(pixel);
+        }
+    }
+    for (int x = new_lon1; x <= new_lon1 + 4; x++) {
+        for (int y = new_lat1; y >= new_lat1 - 4; y--) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            sDColor(pixel);
+        }
+    }
+}
+
 void airportColor (cs225::HSLAPixel& pixel) {
-    pixel.h = 300;
+    pixel.h = 135;
     pixel.s = 0.9;
     pixel.l = 0.6;
 }
@@ -72,14 +107,26 @@ void airportColor (cs225::HSLAPixel& pixel) {
 void drawAirport(double lat, double lon, cs225::PNG& png) {
     int new_lat1 =transe_latitude(lat, png);
     int new_lon1 = transe_longitude(lon, png);
-    for (int x = new_lon1; x >= new_lon1 - 5; x--) {
-        for (int y = new_lat1; y >= new_lat1 - 5; y--) {
+    for (int x = new_lon1; x >= new_lon1 - 3; x--) {
+        for (int y = new_lat1; y >= new_lat1 - 3; y--) {
             cs225::HSLAPixel& pixel = png.getPixel(x, y);
             airportColor(pixel);
         }
     }
-    for (int x = new_lon1; x <= new_lon1 + 5; x++) {
-        for (int y = new_lat1; y <= new_lat1 + 5; y++) {
+    for (int x = new_lon1; x >= new_lon1 - 3; x--) {
+        for (int y = new_lat1; y <= new_lat1 + 3; y++) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            airportColor(pixel);
+        }
+    }
+    for (int x = new_lon1; x <= new_lon1 + 3; x++) {
+        for (int y = new_lat1; y <= new_lat1 + 3; y++) {
+            cs225::HSLAPixel& pixel = png.getPixel(x, y);
+            airportColor(pixel);
+        }
+    }
+    for (int x = new_lon1; x <= new_lon1 + 3; x++) {
+        for (int y = new_lat1; y >= new_lat1 - 3; y--) {
             cs225::HSLAPixel& pixel = png.getPixel(x, y);
             airportColor(pixel);
         }
@@ -109,18 +156,37 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
     int start_x = new_lat1 < new_lat2 ? new_lon1 : new_lon2;
     int maxLon = new_lon1 > new_lon2 ? new_lon1 : new_lon2;
     int minLon = new_lon1 < new_lon2 ? new_lon1 : new_lon2;
+    int start_y = new_lon1 < new_lon2 ? new_lat1 : new_lat2;
     // calc slope
     // deal with minLat  == maxLat
+    double value = (maxLat - minLat) / (maxLon - minLon);
     if(minLat == maxLat)
     {
         int y = minLat;
         for(int x = minLon ; x <= maxLon ; x ++) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x - i, y);
                 routeColor(pixel);
             }
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x + i, y);
+                routeColor(pixel);
+            }
+        }
+    }
+    else if (value < 1)
+    {
+        double k = ((double)(new_lat1 - new_lat2)) / (new_lon1 - new_lon2);
+        for(int x = minLon ; x <= maxLon ; x ++)
+        {
+            int y = k * (x - minLon) + start_y;
+            //cout << y << "\t" << x << endl;
+            for (int i = 0; i < 2; i++) {
+                cs225::HSLAPixel& pixel = png.getPixel(x, y - i);
+                routeColor(pixel);
+            }
+            for (int i = 0; i < 2; i++) {
+                cs225::HSLAPixel& pixel = png.getPixel(x, y + i);
                 routeColor(pixel);
             }
         }
@@ -132,11 +198,11 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
         {
             int x = k * (y - minLat) + start_x;
             //cout << y << "\t" << x << endl;
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x - i, y);
                 routeColor(pixel);
             }
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x + i, y);
                 routeColor(pixel);
             }
@@ -196,20 +262,11 @@ int main() {
     
     
     cout << "start" << endl;
-    Vertex source_;
-    cout << "Enter your departure airport in IATA format (For example, ORD for Chicago O'hare Airport): " << std::endl;
-    std::cin >> source_;
+    Vertex source_ = "SIN";
+    Vertex destination_ = "JFK";
     
-    Vertex destination_;
-    cout << "Enter your arrival airport in IATA format (For example, JFK for John F. Kennedy Airport): " << std::endl;
-    std::cin >> destination_;
-
-    cout << "Calculating shortest path..." << endl;
-
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
-    if (!(d_path_n_distance.begin() != d_path_n_distance.end())) {
-        return 0;
-    }
+    
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
     vector<Airport> air_path;
     for (size_t i = 0; i < d_path.size(); i++) {
@@ -217,18 +274,21 @@ int main() {
     }
     // draw pic
     // open picture
-    string image = "blank.png";
+    string image = "Blankmap.png";
     cs225::PNG png;
     png.readFromFile(image);
     for (size_t i = 0; i < air_path.size(); i++) {
-        double lat1 = air_path[i].latitude;
-        double lon1 = air_path[i].longitude;
-        drawAirport(lat1, lon1, png);
-        /*
-        double lat2 = air_path[air_path.size()-1].latitude;
-        double lon2 = air_path[air_path.size()-1].longitude;
-        drawAirport(lat2, lon2, png);
-        */
+        double lat = air_path[i].latitude;
+        double lon = air_path[i].longitude;
+        drawAirport(lat, lon, png);
+    }
+    for (size_t i = 0; i < air_path.size(); i++) {
+        double lat1 = air_path[0].latitude;
+        double lon1 = air_path[0].longitude;
+        drawSD(lat1, lon1, png);
+        double lat2 = air_path[air_path.size() - 1].latitude;
+        double lon2 = air_path[air_path.size() - 1].longitude;
+        drawSD(lat2, lon2, png);
     }
     for (size_t i = 0; i < air_path.size()-1; i++) {
         // get latitude and longitude 
@@ -240,26 +300,19 @@ int main() {
     }
     
     // write result into picture
-    png.writeToFile("RESULTS/result.png");
-    ofstream result_file;
-    result_file.open("RESULTS/result.txt");
+    png.writeToFile("Result.png");
     int d_distance = d_path_n_distance.begin()->second;
     if (d_distance == -1) {
         cout << "No flight available from " << source_ << " to " << destination_ << endl;
-        result_file << "No flight available from " << source_ << " to " << destination_ << endl;
     } else {
         cout << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
-        result_file << "Shortest flight route from " << source_ << " to " << destination_ << " is: ";
         for (size_t i = 0; i < d_path.size(); i++) {
             cout << d_path[i] << " ";
-            result_file << d_path[i] << " ";
         }
         cout << endl;
-        result_file << endl;
         cout << "The corresponding shortest distance is " << d_distance << endl;
-        result_file << "The corresponding shortest distance is " << d_distance << endl;
     }
-    result_file.close();
+    
     
     vector<Vertex> source_a = g.getAdjacent(source_);
     bool direct_flight = false;
