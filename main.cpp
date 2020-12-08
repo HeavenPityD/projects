@@ -207,7 +207,9 @@ int main() {
     cout << "Calculating shortest path..." << endl;
 
     map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
-    
+    if (!(d_path_n_distance.begin() != d_path_n_distance.end())) {
+        return 0;
+    }
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
     vector<Airport> air_path;
     for (size_t i = 0; i < d_path.size(); i++) {
