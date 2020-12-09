@@ -1,9 +1,0 @@
-Meeting 11/23
-Template for OpenFlight Project was created. Work is distributed to each one.
-
-Meeting 12/3
-Created Airport class to store attributes of each airport.
-Created main function to read data from airports.dat, airlines.dat, and routes.dat, and build the Graph.
-Created Dijkstra function to find shortest path from source to destination.
-
- 
