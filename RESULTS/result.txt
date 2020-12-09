@@ -1,2 +1,2 @@
-Shortest flight route from PVG to JFK is: PVG JFK 
-The corresponding shortest distance is 11873
+Shortest flight route from FNJ to JFK is: FNJ PEK JFK 
+The corresponding shortest distance is 11761
