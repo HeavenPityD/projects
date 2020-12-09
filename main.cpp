@@ -328,7 +328,7 @@ int main() {
         cout << "The corresponding shortest distance is " << d_distance << endl;
         result_file << "The corresponding shortest distance is " << d_distance << endl;
     }
-    
+    result_file.close();
     
     vector<Vertex> source_a = g.getAdjacent(source_);
     bool direct_flight = false;
