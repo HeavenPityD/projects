@@ -1,2 +1,2 @@
-Shortest flight route from PVG to JFK is: PVG JFK 
-The corresponding shortest distance is 11873
+Shortest flight route from JFK to ORD is: JFK ORD 
+The corresponding shortest distance is 1187
