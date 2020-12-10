@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <string>
-
+// a class with variable Vertex and int to represent an airport and its distance form the source
 using namespace std;
 class L {
     public:

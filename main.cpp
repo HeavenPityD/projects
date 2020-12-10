@@ -11,6 +11,7 @@
 #include "BFS.h"
 using namespace std;
 
+// function to find airport(class) with airport ID
 Airport findAirport(vector<Airport> airports, string ID) {
     for (int i = 0; i < (int)airports.size(); i++) {
         if (airports[i].ID == ID) {
@@ -19,6 +20,7 @@ Airport findAirport(vector<Airport> airports, string ID) {
     }
     return Airport();
 }
+
 void split(const string & s, char c, vector<string> & v) {
     int i = 0;
     int j=s.find(c);
@@ -146,10 +148,6 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
     int new_lon1 = transe_longitude(lon1, png);
     int new_lat2 = transe_latitude(lat2, png);
     int new_lon2 = transe_longitude(lon2, png);
-    //cout <<new_lat1 << endl;
-    //cout <<new_lon1 << endl;
-    //cout <<new_lat2 << endl;
-    //cout <<new_lon2 << endl;
     
     int maxLat = new_lat1 > new_lat2 ? new_lat1 : new_lat2;
     int minLat = new_lat1 < new_lat2 ? new_lat1 : new_lat2;
@@ -180,7 +178,6 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
         for(int x = minLon ; x <= maxLon ; x ++)
         {
             int y = k * (x - minLon) + start_y;
-            //cout << y << "\t" << x << endl;
             for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x, y - i);
                 routeColor(pixel);
@@ -197,7 +194,6 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
         for(int y = minLat ; y <= maxLat ; y ++)
         {
             int x = k * (y - minLat) + start_x;
-            //cout << y << "\t" << x << endl;
             for (int i = 0; i < 2; i++) {
                 cs225::HSLAPixel& pixel = png.getPixel(x - i, y);
                 routeColor(pixel);
@@ -210,8 +206,11 @@ void drawLine(double lat1,double lon1,double lat2 , double lon2 , cs225::PNG& pn
     }
 }
 
+/*
+ * main function here
+ */
 int main() {
-
+    // read file and build graph
     ifstream file;
     file.open("airports.dat");
     string line;
@@ -256,18 +255,29 @@ int main() {
     
     dis_file.close();
     
-    
-    cout << "start" << endl;
-    cout << "Please enter your departure Airport in IATA format (for example, ORD for Chicago O'hare Airport): " << endl;
+    cout << " " << endl;
+    cout << "PART1: Find Shortes Flight" << endl;
+    bool valid_input_SD = false;
     Vertex source_;
-    cin >> source_;
-    cout << "Please enter your arrival Airport in IATA format (for example, ATL for Atlanta International airport): " << endl;
     Vertex destination_;
-    cin >> destination_;
+    map<vector<Vertex>, int> d_path_n_distance;
+    while (!valid_input_SD) {
+        cout << "Please enter your departure Airport in IATA format (for example, ORD for Chicago O'hare Airport): " << endl;
+        cin >> source_;
+        cout << " " << endl;
+        cout << "Please enter your arrival Airport in IATA format (for example, ATL for Atlanta International airport): " << endl;
+        cin >> destination_;
+        cout << " " << endl;
+        cout << "Checking Valid Input..." << endl;
+        d_path_n_distance = Dijkstra(g, source_, destination_);
+        if (d_path_n_distance.begin() != d_path_n_distance.end()) {
+            valid_input_SD = true;
+        }
+    }
     
-    cout << "Calculating shortest path..." << endl;
-    map<vector<Vertex>, int> d_path_n_distance = Dijkstra(g, source_, destination_);
-    if (d_path_n_distance.begin() == d_path_n_distance.end()) return 0;
+    
+    
+    
     vector<Vertex> d_path = d_path_n_distance.begin()->first;
   
     vector<Airport> air_path;
@@ -335,10 +345,72 @@ int main() {
     }
     if (direct_flight) {
         cout << "The direct distance between " << source_ << " and " << destination_ << " is " << g.getEdgeWeight(source_, destination_) << endl;
+        cout << "The output graph is stored in RESULTS folder" << endl;
     } else {
         cout << "No direct flight from " << source_ << " to " << destination_ << endl;
     }
+    cout << " " << endl;
+    cout << "PART2: Traversing the Graph" << endl;
+    bool valid_input_S = false;
+    
 
+    
+    Vertex start_t;
+    vector<Vertex> t_;
+    while (!valid_input_S) {
+        cout << "Please enter the starting Airport in IATA format (for example, ORD for Chicago O'hare Airport): " << endl;
+        cin >> start_t;
+        cout << " " << endl;
+        cout << "Checking Valid Input..." << endl;
+        vector<Vertex> tmp = g.getVertices();
+        int sum = 0;
+        for (size_t i = 0; i < tmp.size(); i++) {
+            if (tmp[i] == start_t) {
+                sum += 1;
+            }
+        }
+        if (sum == 1) {
+            valid_input_S = true;
+        } else {
+            cout << "Invalid Input. Please Enter Valid Airport ID" << endl;
+            cout << " " << endl;
+            continue;
+        }
+        cout << "Valid Input. Traversing..." << endl;
+        BFS b_(g,start_t);
+        t_ = b_.traverse();
+        int s_ = t_.size();
+        if (s_ == 1) {
+            cout << "Starting Airport is sperated from all other airports." << endl;
+            break;
+        }
+        int index_;
+        cout << "Traversal Finished. Enter integer i from 1 to " << s_ - 1 << " to check the ith airpot ID in the vector of airports connected to starting Airpot. Enter 0 to check the entire vector." << endl;
+        cin >> index_;
+        cout << " " << endl;
+        bool v_ = false;
+        while (!v_) {
+            if (index_ == 0) {
+                for (int j = 1; j < s_; j++) {
+                    cout << t_[j] << " ";
+                }
+                cout << endl;
+                v_ = true;
+            } else if (index_ > 0 && index_ < s_) {
+                cout << t_[index_] << " is the " << index_ << "th ID." << endl;
+                cout << " " << endl;
+                v_ = true;
+            } else {
+                cout << "Please Enter Valid i." << endl;
+                cin >> index_;
+                cout << " " << endl;
+            }
+        }
+    }
+    
+    return 0;
+
+    // Testing Code Commented
     /*
     cout << "debugging" << endl;
     vector<Vertex> FNJ_A = g.getAdjacent("FNJ");
@@ -432,5 +504,8 @@ int main() {
     */
     
     
-    return 0;
+    
+    
+    
+    
 }

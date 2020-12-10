@@ -37,10 +37,12 @@ map<vector<Vertex>, int> Dijkstra(Graph g, Vertex source, Vertex destination) {
         }
     }
     if (sum < 2) {
-        cout << "Invalid Source or Destination" << endl;
+        cout << "Invalid Source or Destination. Please Enter Valid Airport IDs." << endl;
+        cout << " " << endl;
         return path;
     } else {
-        cout << "Valid Input" << endl;
+        cout << "Valid Input. Finding Shortest Path..." << endl;
+        cout << " " << endl;
     }
     
     /*
