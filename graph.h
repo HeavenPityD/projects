@@ -62,6 +62,9 @@ public:
      * @param weighted - specifies whether the graph is a weighted graph or
      *  not
      */
+
+    Graph();
+    
     Graph(bool weighted);
 
     /**

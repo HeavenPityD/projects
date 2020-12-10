@@ -8,7 +8,7 @@
 #include "dijkstra.cpp"
 #include "cs225/PNG.h"
 #include "cs225/HSLAPixel.h"
-
+#include "BFS.h"
 using namespace std;
 
 Airport findAirport(vector<Airport> airports, string ID) {
@@ -255,10 +255,6 @@ int main() {
     }
     
     dis_file.close();
-    
-    
-    
-    
     
     
     cout << "start" << endl;
