@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 Shortest flight route from JFK to ORD is: JFK ORD 
 The corresponding shortest distance is 1187
+=======
+Shortest flight route from FNJ to JFK is: FNJ PEK JFK 
+The corresponding shortest distance is 11761
+>>>>>>> 4322b4360b5191251b6dd2b871f3984e98d45f69
